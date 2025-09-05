@@ -7,6 +7,7 @@
 	<groupId>com.lib.integration</groupId>
 	<artifactId>java-http-client</artifactId>
 	<version>1.0</version>
+	<packaging>jar</packaging>
 
 	<dependencies>
 		<dependency>
