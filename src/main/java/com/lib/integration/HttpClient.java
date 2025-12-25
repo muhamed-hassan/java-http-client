@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,12 +48,9 @@ public class HttpClient {
 					throw new IOException("Failed to connect with " + url);
 			}			
 			
-		} catch (MalformedURLException e) {
-			System.out.println(e.getMessage());
-		} catch (ProtocolException e) {
-			System.out.println(e.getMessage());
-		} catch (IOException e) {
-			System.out.println(e.getMessage());
+		} catch (Exception e) {		
+			System.err.println(e.getMessage());
+			throw new RuntimeException(e);			
 		} finally {
 			connection.disconnect();
 	    }
@@ -97,12 +92,9 @@ public class HttpClient {
 					throw new IOException("Failed to connect with " + url);
 			}
 			
-		} catch (MalformedURLException e) {
-			System.out.println(e.getMessage());
-		} catch (ProtocolException e) {
-			System.out.println(e.getMessage());
-		} catch (IOException e) {
-			System.out.println(e.getMessage());
+		} catch (Exception e) {		
+			System.err.println(e.getMessage());
+			throw new RuntimeException(e);			
 		} finally {
 			connection.disconnect();
 	    }
@@ -134,12 +126,9 @@ public class HttpClient {
 					throw new IOException("Failed to connect with " + url);
 			}
 			
-		} catch (MalformedURLException e) {
-			System.out.println(e.getMessage());
-		} catch (ProtocolException e) {
-			System.out.println(e.getMessage());
-		} catch (IOException e) {
-			System.out.println(e.getMessage());
+		} catch (Exception e) {		
+			System.err.println(e.getMessage());
+			throw new RuntimeException(e);			
 		} finally {
 			connection.disconnect();
 	    }
@@ -180,12 +169,9 @@ public class HttpClient {
 					throw new IOException("Failed to connect with " + url);
 			}
 			
-		} catch (MalformedURLException e) {
-			System.out.println(e.getMessage());
-		} catch (ProtocolException e) {
-			System.out.println(e.getMessage());
-		} catch (IOException e) {
-			System.out.println(e.getMessage());
+		} catch (Exception e) {		
+			System.err.println(e.getMessage());
+			throw new RuntimeException(e);			
 		} finally {
 			connection.disconnect();
 	    }
