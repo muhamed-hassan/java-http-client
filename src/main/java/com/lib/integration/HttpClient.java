@@ -32,14 +32,14 @@ public class HttpClient {
 			URL url = new URL(providerBaseUrl + requestPath);
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("GET");
-			connection.setRequestProperty("Accept", "application/json");
-			int responseCode = connection.getResponseCode();
-			System.out.println("> GET Response Code :: " + responseCode);
+			connection.setRequestProperty("Accept", "application/json");			
+
 			ObjectMapper objectMapper = new ObjectMapper();
+			
+			int responseCode = connection.getResponseCode();
 			switch (responseCode) {
 				case HttpURLConnection.HTTP_OK:					
 					responseBody = objectMapper.readValue((InputStream) connection.getContent(), responseBodyType);
-					System.out.println("Parsed response: " + responseBody);
 					break;
 				case HttpURLConnection.HTTP_INTERNAL_ERROR:
 					Object errorBodyWithServerError = objectMapper.readValue((InputStream) connection.getErrorStream(), Object.class);
@@ -49,13 +49,11 @@ public class HttpClient {
 			}			
 			
 		} catch (Exception e) {		
-			System.err.println(e.getMessage());
 			throw new RuntimeException(e);			
 		} finally {
 			connection.disconnect();
 	    }
 		
-		System.out.println();
 		return responseBody;
 	}
 		
@@ -77,11 +75,7 @@ public class HttpClient {
 			outputStream.flush();
 			
 			int responseCode = connection.getResponseCode();
-			System.out.println("> POST Response Code :: " + responseCode);
 			switch (responseCode) {
-				case HttpURLConnection.HTTP_CREATED:
-					System.out.println("Payload is sent successfully");
-					break;
 				case HttpURLConnection.HTTP_BAD_REQUEST:
 					Object errorBodyWithBadRequest = objectMapper.readValue((InputStream) connection.getErrorStream(), Object.class);
 					throw new IOException("Sent payload is not valid: " + errorBodyWithBadRequest);
@@ -93,13 +87,10 @@ public class HttpClient {
 			}
 			
 		} catch (Exception e) {		
-			System.err.println(e.getMessage());
 			throw new RuntimeException(e);			
 		} finally {
 			connection.disconnect();
 	    }
-		
-		System.out.println();
 	}
 	
 	/* ******************************************************************************************************** */	
@@ -112,13 +103,10 @@ public class HttpClient {
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("DELETE");
 						
-			int responseCode = connection.getResponseCode();
-			System.out.println("> DELETE Response Code :: " + responseCode);
 			ObjectMapper objectMapper = new ObjectMapper();
+			
+			int responseCode = connection.getResponseCode();			
 			switch (responseCode) {
-				case HttpURLConnection.HTTP_NO_CONTENT:
-					System.out.println("Delete is done");
-					break;
 				case HttpURLConnection.HTTP_INTERNAL_ERROR:
 					Object errorBodyWithServerError = objectMapper.readValue((InputStream) connection.getErrorStream(), Object.class);
 					throw new IOException("Failed to connect with " + url + " due to " + errorBodyWithServerError);
@@ -127,13 +115,10 @@ public class HttpClient {
 			}
 			
 		} catch (Exception e) {		
-			System.err.println(e.getMessage());
 			throw new RuntimeException(e);			
 		} finally {
 			connection.disconnect();
-	    }
-		
-		System.out.println();
+	    }		
 	}
 	
 	/* ******************************************************************************************************** */	
@@ -154,11 +139,7 @@ public class HttpClient {
 			outputStream.flush();
 			
 			int responseCode = connection.getResponseCode();
-			System.out.println("> PUT Response Code :: " + responseCode);
 			switch (responseCode) {
-				case HttpURLConnection.HTTP_NO_CONTENT:
-					System.out.println("Payload is sent successfully");
-					break;
 				case HttpURLConnection.HTTP_BAD_REQUEST:
 					Object errorBodyWithBadRequest = objectMapper.readValue((InputStream) connection.getErrorStream(), Object.class);
 					throw new IOException("Sent payload is not valid: " + errorBodyWithBadRequest);
@@ -170,13 +151,10 @@ public class HttpClient {
 			}
 			
 		} catch (Exception e) {		
-			System.err.println(e.getMessage());
 			throw new RuntimeException(e);			
 		} finally {
 			connection.disconnect();
 	    }
-	
-		System.out.println();
 	}
 	
 }
