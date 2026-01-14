@@ -41,7 +41,7 @@ public class HttpClient {
 			switch (responseCode) {
 				case HttpURLConnection.HTTP_OK:					
 					responseBody = objectMapper.readValue((InputStream) connection.getContent(), responseBodyType);
-					break;
+					return responseBody;
 				case HttpURLConnection.HTTP_NOT_FOUND:
 					String errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), String.class);
 					throw new IOException("Failed to connect with " + requestUrl + " due to " + errorBody);	
@@ -53,14 +53,12 @@ public class HttpClient {
 			throw new RuntimeException(e);			
 		} finally {
 			connection.disconnect();
-	    }
-		
-		return responseBody;
+	    }		
 	}
 		
 	/* ******************************************************************************************************** */	
 	
-	protected <T> void post(String requestPath, T payload) {
+	protected <T> boolean post(String requestPath, T payload) {
 		
 		HttpURLConnection connection = null;
 		try {
@@ -79,6 +77,8 @@ public class HttpClient {
 			
 			int responseCode = connection.getResponseCode();
 			switch (responseCode) {
+				case HttpURLConnection.HTTP_CREATED:
+					return true;
 				case HttpURLConnection.HTTP_BAD_REQUEST:
 					String errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), String.class);
 					throw new IOException("Failed to connect with " + requestUrl + " due to " + errorBody);	
@@ -95,7 +95,7 @@ public class HttpClient {
 	
 	/* ******************************************************************************************************** */	
 	
-	protected void delete(String requestPath) {
+	protected boolean delete(String requestPath) {
 		
 		HttpURLConnection connection = null;
 		try {
@@ -109,6 +109,8 @@ public class HttpClient {
 			
 			int responseCode = connection.getResponseCode();			
 			switch (responseCode) {
+				case HttpURLConnection.HTTP_NO_CONTENT:
+					return true;
 				case HttpURLConnection.HTTP_NOT_FOUND:
 					String errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), String.class);
 					throw new IOException("Failed to connect with " + requestUrl + " due to " + errorBody);	
@@ -125,7 +127,7 @@ public class HttpClient {
 	
 	/* ******************************************************************************************************** */	
 	
-	protected <T> void put(String requestPath, T payload) {
+	protected <T> boolean put(String requestPath, T payload) {
 		
 		HttpURLConnection connection = null;
 		try {
@@ -144,6 +146,8 @@ public class HttpClient {
 			
 			int responseCode = connection.getResponseCode();
 			switch (responseCode) {
+				case HttpURLConnection.HTTP_NO_CONTENT:
+					return true;
 				case HttpURLConnection.HTTP_NOT_FOUND:
 				case HttpURLConnection.HTTP_BAD_REQUEST:
 					String errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), String.class);
