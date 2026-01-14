@@ -43,8 +43,8 @@ public class HttpClient {
 					responseBody = objectMapper.readValue((InputStream) connection.getContent(), responseBodyType);
 					return responseBody;
 				case HttpURLConnection.HTTP_NOT_FOUND:
-					String errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), String.class);
-					throw new IOException("Failed to connect with " + requestUrl + " due to " + errorBody);	
+					Object errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), Object.class);
+					throw new IOException("Error in communication with " + requestUrl + " due to " + errorBody);	
 				default:
 					throw new IOException("Failed to connect with " + requestUrl + " and status code is " + responseCode);
 			}			
@@ -80,8 +80,8 @@ public class HttpClient {
 				case HttpURLConnection.HTTP_CREATED:
 					return true;
 				case HttpURLConnection.HTTP_BAD_REQUEST:
-					String errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), String.class);
-					throw new IOException("Failed to connect with " + requestUrl + " due to " + errorBody);	
+					Object errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), Object.class);
+					throw new IOException("Error in communication with " + requestUrl + " due to " + errorBody);
 				default:
 					throw new IOException("Failed to connect with " + requestUrl + " and status code is " + responseCode);
 			}
@@ -112,8 +112,8 @@ public class HttpClient {
 				case HttpURLConnection.HTTP_NO_CONTENT:
 					return true;
 				case HttpURLConnection.HTTP_NOT_FOUND:
-					String errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), String.class);
-					throw new IOException("Failed to connect with " + requestUrl + " due to " + errorBody);	
+					Object errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), Object.class);
+					throw new IOException("Error in communication with " + requestUrl + " due to " + errorBody);
 				default:
 					throw new IOException("Failed to connect with " + requestUrl + " and status code is " + responseCode);
 			}
@@ -150,8 +150,8 @@ public class HttpClient {
 					return true;
 				case HttpURLConnection.HTTP_NOT_FOUND:
 				case HttpURLConnection.HTTP_BAD_REQUEST:
-					String errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), String.class);
-					throw new IOException("Failed to connect with " + requestUrl + " due to " + errorBody);
+					Object errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), Object.class);
+					throw new IOException("Error in communication with " + requestUrl + " due to " + errorBody);
 				default:
 					throw new IOException("Failed to connect with " + requestUrl + " and status code is " + responseCode);
 			}
