@@ -29,7 +29,8 @@ public class HttpClient {
 		Object responseBody = null;		
 		try {
 			
-			URL url = new URL(providerBaseUrl + requestPath);
+			String requestUrl = providerBaseUrl + requestPath;
+			URL url = new URL(requestUrl);
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.setRequestProperty("Accept", "application/json");			
@@ -41,11 +42,11 @@ public class HttpClient {
 				case HttpURLConnection.HTTP_OK:					
 					responseBody = objectMapper.readValue((InputStream) connection.getContent(), responseBodyType);
 					break;
-				case HttpURLConnection.HTTP_INTERNAL_ERROR:
-					Object errorBodyWithServerError = objectMapper.readValue((InputStream) connection.getErrorStream(), Object.class);
-					throw new IOException("Failed to connect with " + url + " due to " + errorBodyWithServerError);	
+				case HttpURLConnection.HTTP_NOT_FOUND:
+					String errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), String.class);
+					throw new IOException("Failed to connect with " + requestUrl + " due to " + errorBody);	
 				default:
-					throw new IOException("Failed to connect with " + url);
+					throw new IOException("Failed to connect with " + requestUrl + " and status code is " + responseCode);
 			}			
 			
 		} catch (Exception e) {		
@@ -58,12 +59,14 @@ public class HttpClient {
 	}
 		
 	/* ******************************************************************************************************** */	
+	
 	protected <T> void post(String requestPath, T payload) {
 		
 		HttpURLConnection connection = null;
 		try {
 			
-			URL url = new URL(providerBaseUrl + requestPath);
+			String requestUrl = providerBaseUrl + requestPath;
+			URL url = new URL(requestUrl);
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("POST");
 			connection.setRequestProperty("Content-Type", "application/json");
@@ -77,13 +80,10 @@ public class HttpClient {
 			int responseCode = connection.getResponseCode();
 			switch (responseCode) {
 				case HttpURLConnection.HTTP_BAD_REQUEST:
-					Object errorBodyWithBadRequest = objectMapper.readValue((InputStream) connection.getErrorStream(), Object.class);
-					throw new IOException("Sent payload is not valid: " + errorBodyWithBadRequest);
-				case HttpURLConnection.HTTP_INTERNAL_ERROR:
-					Object errorBodyWithServerError = objectMapper.readValue((InputStream) connection.getErrorStream(), Object.class);
-					throw new IOException("Failed to connect with " + url + " due to " + errorBodyWithServerError);	
+					String errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), String.class);
+					throw new IOException("Failed to connect with " + requestUrl + " due to " + errorBody);	
 				default:
-					throw new IOException("Failed to connect with " + url);
+					throw new IOException("Failed to connect with " + requestUrl + " and status code is " + responseCode);
 			}
 			
 		} catch (Exception e) {		
@@ -94,12 +94,14 @@ public class HttpClient {
 	}
 	
 	/* ******************************************************************************************************** */	
+	
 	protected void delete(String requestPath) {
 		
 		HttpURLConnection connection = null;
 		try {
 			
-			URL url = new URL(providerBaseUrl + requestPath);
+			String requestUrl = providerBaseUrl + requestPath;
+			URL url = new URL(requestUrl);
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("DELETE");
 						
@@ -107,11 +109,11 @@ public class HttpClient {
 			
 			int responseCode = connection.getResponseCode();			
 			switch (responseCode) {
-				case HttpURLConnection.HTTP_INTERNAL_ERROR:
-					Object errorBodyWithServerError = objectMapper.readValue((InputStream) connection.getErrorStream(), Object.class);
-					throw new IOException("Failed to connect with " + url + " due to " + errorBodyWithServerError);
+				case HttpURLConnection.HTTP_NOT_FOUND:
+					String errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), String.class);
+					throw new IOException("Failed to connect with " + requestUrl + " due to " + errorBody);	
 				default:
-					throw new IOException("Failed to connect with " + url);
+					throw new IOException("Failed to connect with " + requestUrl + " and status code is " + responseCode);
 			}
 			
 		} catch (Exception e) {		
@@ -122,12 +124,14 @@ public class HttpClient {
 	}
 	
 	/* ******************************************************************************************************** */	
+	
 	protected <T> void put(String requestPath, T payload) {
 		
 		HttpURLConnection connection = null;
 		try {
 			
-			URL url = new URL(providerBaseUrl + requestPath);
+			String requestUrl = providerBaseUrl + requestPath;
+			URL url = new URL(requestUrl);
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("PUT");
 			connection.setRequestProperty("Content-Type", "application/json");
@@ -140,14 +144,12 @@ public class HttpClient {
 			
 			int responseCode = connection.getResponseCode();
 			switch (responseCode) {
+				case HttpURLConnection.HTTP_NOT_FOUND:
 				case HttpURLConnection.HTTP_BAD_REQUEST:
-					Object errorBodyWithBadRequest = objectMapper.readValue((InputStream) connection.getErrorStream(), Object.class);
-					throw new IOException("Sent payload is not valid: " + errorBodyWithBadRequest);
-				case HttpURLConnection.HTTP_INTERNAL_ERROR:
-					Object errorBodyWithServerError = objectMapper.readValue((InputStream) connection.getErrorStream(), Object.class);
-					throw new IOException("Failed to connect with " + url + " due to " + errorBodyWithServerError);	
+					String errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), String.class);
+					throw new IOException("Failed to connect with " + requestUrl + " due to " + errorBody);
 				default:
-					throw new IOException("Failed to connect with " + url);
+					throw new IOException("Failed to connect with " + requestUrl + " and status code is " + responseCode);
 			}
 			
 		} catch (Exception e) {		
