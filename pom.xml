@@ -4,7 +4,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.lib.integration</groupId>
+	<groupId>lib</groupId>
 	<artifactId>java-http-client</artifactId>
 	<version>1.0</version>
 	<packaging>jar</packaging>

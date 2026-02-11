@@ -1,4 +1,4 @@
-package com.lib.integration;
+package lib;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,59 +11,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /*
  * Designed to be extended (inherited) to hide the low level complexity a bit and generalize the HTTP verbs usage.
  * 
- * Abstract Example: 
- * - ChildClientClass extends HttpClient => Where `ChildClient` is replaced with a proper name where it follows SRP and KISS 
+ * # DNS of backend
+ * - dnsOfBackend is injected via app configurations
+ * - all backend restful-web-services are aggregated under single name called backend
  * 
  * */
 public class HttpClient {
 
-	private String providerBaseUrl;
+	private String dnsOfBackend;
 	
-	public HttpClient(String providerBaseUrl) {
-		this.providerBaseUrl = providerBaseUrl;
-	}
-	
-	protected Object get(String requestPath, Class<? extends Object> responseBodyType) {
-		
-		HttpURLConnection connection = null;
-		Object responseBody = null;		
-		try {
-			
-			String requestUrl = providerBaseUrl + requestPath;
-			URL url = new URL(requestUrl);
-			connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.setRequestProperty("Accept", "application/json");			
-
-			ObjectMapper objectMapper = new ObjectMapper();
-			
-			int responseCode = connection.getResponseCode();
-			switch (responseCode) {
-				case HttpURLConnection.HTTP_OK:					
-					responseBody = objectMapper.readValue((InputStream) connection.getContent(), responseBodyType);
-					return responseBody;
-				case HttpURLConnection.HTTP_NOT_FOUND:
-					Object errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), Object.class);
-					throw new IOException("Error in communication with " + requestUrl + " due to " + errorBody);	
-				default:
-					throw new IOException("Failed to connect with " + requestUrl + " and status code is " + responseCode);
-			}			
-			
-		} catch (Exception e) {		
-			throw new RuntimeException(e);			
-		} finally {
-			connection.disconnect();
-	    }		
-	}
-		
-	/* ******************************************************************************************************** */	
+	public HttpClient(String dnsOfBackend) {
+		this.dnsOfBackend = dnsOfBackend;
+	}	
 	
 	protected <T> boolean post(String requestPath, T payload) {
 		
 		HttpURLConnection connection = null;
 		try {
 			
-			String requestUrl = providerBaseUrl + requestPath;
+			String requestUrl = dnsOfBackend + requestPath;
 			URL url = new URL(requestUrl);
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("POST");
@@ -95,35 +61,39 @@ public class HttpClient {
 	
 	/* ******************************************************************************************************** */	
 	
-	protected boolean delete(String requestPath) {
+	protected Object get(String requestPath, Class<? extends Object> responseBodyType) {
 		
 		HttpURLConnection connection = null;
+		Object responseBody = null;		
 		try {
 			
-			String requestUrl = providerBaseUrl + requestPath;
+			String requestUrl = dnsOfBackend + requestPath;
 			URL url = new URL(requestUrl);
 			connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("DELETE");
-						
+			connection.setRequestMethod("GET");
+			connection.setRequestProperty("Accept", "application/json");			
+
 			ObjectMapper objectMapper = new ObjectMapper();
 			
-			int responseCode = connection.getResponseCode();			
+			int responseCode = connection.getResponseCode();
 			switch (responseCode) {
-				case HttpURLConnection.HTTP_NO_CONTENT:
-					return true;
+				case HttpURLConnection.HTTP_OK:					
+					responseBody = objectMapper.readValue((InputStream) connection.getContent(), responseBodyType);
+					return responseBody;
+				case HttpURLConnection.HTTP_BAD_REQUEST:
 				case HttpURLConnection.HTTP_NOT_FOUND:
 					Object errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), Object.class);
-					throw new IOException("Error in communication with " + requestUrl + " due to " + errorBody);
+					throw new IOException("Error in communication with " + requestUrl + " due to " + errorBody);	
 				default:
 					throw new IOException("Failed to connect with " + requestUrl + " and status code is " + responseCode);
-			}
+			}			
 			
 		} catch (Exception e) {		
 			throw new RuntimeException(e);			
 		} finally {
 			connection.disconnect();
 	    }		
-	}
+	}	
 	
 	/* ******************************************************************************************************** */	
 	
@@ -132,7 +102,7 @@ public class HttpClient {
 		HttpURLConnection connection = null;
 		try {
 			
-			String requestUrl = providerBaseUrl + requestPath;
+			String requestUrl = dnsOfBackend + requestPath;
 			URL url = new URL(requestUrl);
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("PUT");
@@ -148,7 +118,6 @@ public class HttpClient {
 			switch (responseCode) {
 				case HttpURLConnection.HTTP_NO_CONTENT:
 					return true;
-				case HttpURLConnection.HTTP_NOT_FOUND:
 				case HttpURLConnection.HTTP_BAD_REQUEST:
 					Object errorBody = objectMapper.readValue((InputStream) connection.getErrorStream(), Object.class);
 					throw new IOException("Error in communication with " + requestUrl + " due to " + errorBody);
@@ -161,6 +130,33 @@ public class HttpClient {
 		} finally {
 			connection.disconnect();
 	    }
+	}
+	
+	/* ******************************************************************************************************** */	
+	
+	protected boolean delete(String requestPath) {
+		
+		HttpURLConnection connection = null;
+		try {
+			
+			String requestUrl = dnsOfBackend + requestPath;
+			URL url = new URL(requestUrl);
+			connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("DELETE");
+			
+			int responseCode = connection.getResponseCode();			
+			switch (responseCode) {
+				case HttpURLConnection.HTTP_NO_CONTENT:
+					return true;
+				default:
+					throw new IOException("Failed to connect with " + requestUrl + " and status code is " + responseCode);
+			}
+			
+		} catch (Exception e) {		
+			throw new RuntimeException(e);			
+		} finally {
+			connection.disconnect();
+	    }		
 	}
 	
 }
